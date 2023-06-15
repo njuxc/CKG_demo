@@ -1,0 +1,50 @@
+# Case insensitive pattern matching (see java.util.regex.Pattern flags)
+ENV.defaultStringPatternFlags = 2
+
+
+# Map variable names to annotation keys
+ner = { type: "CLASS", value: "edu.stanford.nlp.ling.CoreAnnotations$NamedEntityTagAnnotation" }
+normalized = { type: "CLASS", value: "edu.stanford.nlp.ling.CoreAnnotations$NormalizedNamedEntityTagAnnotation" }
+tokens = { type: "CLASS", value: "edu.stanford.nlp.ling.CoreAnnotations$TokensAnnotation" }
+
+
+$Redundant_patterns1 = (
+[{word:/unnecessary|duplicate|duplicated|redundant|multiple/}&{tag:/JJ.*/}] => "RedundantKeyJJ")
+
+$Redundant_patterns2 = (
+[{word:/remov.*|avoid.*/}&{tag:/VB.*/}] => "RedundantKeyVB" 
+)
+
+$FunctionCall= (
+[{word:/[A-Za-z0-9\_\.]+\(.*\)/}] => "FunctionCall"
+)
+
+$CodeToken=(
+[{word:/[A-Za-z0-9]+\_[A-Za-z0-9\_\.]+|[A-Za-z0-9\_]+\.[A-Za-z0-9\_\.]+/}] => "CodeToken"
+)
+
+$Redundant_patterns3=(
+[{word:/no|not/}] [{word:/need.*/}] =>"NoNeedKey" |
+/no/ /point/ =>"NoNeedKey"
+)
+
+
+
+# Define ruleType to be over tokens
+ENV.defaults["ruleType"] = "tokens"
+
+
+{ pattern: ( $Redundant_patterns1 ), 
+  action: ( Annotate($0, ner, "RedundantKeyJJ"), Annotate($0, normalized, $$0.value )) }
+
+{ pattern: ( $Redundant_patterns2 ), 
+  action: ( Annotate($0, ner, "RedundantKeyVB"), Annotate($0, normalized, $$0.value )) }
+
+{ pattern: ( $FunctionCall ), 
+  action: ( Annotate($0, ner, "FunctionCall"), Annotate($0, normalized, $$0.value )) }
+
+{ pattern: ( $CodeToken ), 
+  action: ( Annotate($0, ner, "CodeToken"), Annotate($0, normalized, $$0.value )) }
+
+{ pattern: ( $Redundant_patterns3 ), 
+  action: ( Annotate($0, ner, "NoNeedKey"), Annotate($0, normalized, $$0.value )) }
