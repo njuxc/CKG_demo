@@ -30,6 +30,19 @@ ASTParser.py: 调用入口
 
 ASTVisitor.py: 在AST遍历功能上重构+增加CKG知识提取逻辑
 
+补充说明:The demo including five main files
+
+CKG_constructor.py: The entry of the demo, including several processing: static ast analysis, ckg node construction, question construction(simple try), relation generation...
+
+ASTVisitor.py: The functions about generating code entities and edges.
+
+KG.py: The definition information about ckg.
+
+Question.py: Just a simple extension framework entry for the later processing of GGNN construction.
+
+utils.py: Just some helpful functions.
+
+
 ### 4.其他文件
 
 其他文件，如extract_\*.py为一些中间数据的提取、预处理等。
